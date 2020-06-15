@@ -25,13 +25,13 @@ class EdgeSwitchDriver(NetworkDriver):
         :param optional_args:
         """
         self.device = None
+        self.device_type = "ubiquiti_edgeswitch"
         self.hostname = hostname
         self.username = username
         self.password = password
         self.timeout = timeout
 
-        if optional_args is None:
-            optional_args = {}
+        self.force_no_enable = True # disable enable mode trigger in _netmiko_open()
 
         # Netmiko possible arguments
         self._netmiko_optional_args = {
@@ -49,16 +49,18 @@ class EdgeSwitchDriver(NetworkDriver):
             'keepalive': 30
         }
 
+        if optional_args is None:
+            optional_args = {}
+
         # Build dict of any optional Netmiko args
         self._netmiko_optional_args.update(optional_args)
 
     def open(self):
         """Open a connection to the device.
         """
-        device_type = "ubiquiti_edgeswitch"
 
         self.device = self._netmiko_open(
-            device_type, netmiko_optional_args=self._netmiko_optional_args
+            self.device_type, netmiko_optional_args=self._netmiko_optional_args
         )
 
     def close(self):
